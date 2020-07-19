@@ -1,0 +1,4 @@
+Input 784
+Fully 16 relu
+Fully 32 relu
+Fully 10 linear

@@ -1,184 +1,60 @@
 # Hello Neural Network
 Implementation of Deep Neural Network able to recognize digits from MNIST database
-## Libraries
-numpy 1.18.2
+## Packages
+```numpy 1.17.4```
+
 ## API
-- <b>\__init__(self,layers,leftRange,rightRange,weights=None)</b>
-  - layers - is a list of integers saying about our network structure (e.g. [784,40,20,10] networks structure 784-40-20-10),
-  - leftRange, rightRange - range of weight draws.
-  - weights - if passed, left and right range are not used and network use this weights
 
 
-- <b>setHiddenAF(self,indexLayer,actFunction,derivFunction)</b> set activation function of hidden layer
-  - indexLayer - number of hidden layer (0 - first layer, 1 - second layer, ....)
-  - actFunction - activation function, which will be set
-  - derivFunction - derivative of activation function, which will be set
+
+<b>save_network(self, directory)</b> - saves network in files, which will be in <i>directory</i>
+  - <i>directory</i> - path to directory, which will contain saved files
+
+<b>load_network(self, directory)</b> - loads network to model, from files located in <i>directory</i>
+  - <i>directory</i> - path to directory, which will contain saved files
 
 
-- <b>setSoftmax(self,bool)</b>
-  - bool - if true softmax function is activated on last layer (output layer) and its derivative, otherwise there's no function used
+<b>add_input(self, size)</b> - Adds input layer to model. It must be used before any add_* function. <i>Size</i> indicate to size of input data. Return True if adding layer has been completed with success, otherwise False.
+  - <i>size</i> - size of input data
+
+<b>add_fully_connected(self, neurons, activation='linear', left_range=-0.1, right_range=0.1)</b> - Adds fully connected layer. Return True if adding layer has been completed with success, otherwise False.
+  - <i>neurons</i> - number of neurons in layer
+  - <i>activation</i> - name of activation function, which will be used in added layer
+  - <i>left_range</i> - left range used to generate weights values
+  - <i>left_range</i> - right range used to generate weights values
 
 
-- <b>predict(self,inputData)</b> return prediction of network basing on given inputData. Of course input needs match to network structure.
-  - inputData - set of input data
+<b>predict(self, input_data)</b> - If passed <i>input_data</i> is valid to network structure it returns network answer, otherwise None.
+  - <i>input_data</i> - data used as input for network, which answer is returned
 
+<b>fit(self, input_data, expected_data, iterations=100, alpha=0.01, drop_percent=0.5, test_input=None, test_expected=None)</b> - Return True if training has been completed with success, otherwise False.
+  - <i>input_data</i> - array of data, where input_data.shape = (number of input data, shape of single data)
+  - <i>expected_data</i> - the same structure as in <i>input_data</i>, but here we pass expected data
+  - <i>iterations</i> - number of iterations during training
+  - <i>alpha</i> - learning rate (0.0-1.0) indicates how fast network should learn
+  - <i>drop_percent</i> - drop (0.0-1.0) indicates how much of neurons should be 'dropped', it prevents network from overfitting.
+  - <i>test_input</i> - data used for debugging purposes, probably you should omit it
+  - <i>test_expected</i> - same issue like in <i>test_input</i>
 
-- <b>fit(self, inputData, expectedData, iterations=100, alpha=0.01, batchSize=-1, dropPercent=0.5, testInput=None, testExpected=None)</b>
-    - inputData - set of training data
-    - expectedData - set of expeceted ouput for training data
-    - iterations - number of iterations for training
-    - alpha - learning rate, number between 0 and 1
-    - batchSize - size of batch, if no batch passed full batch is used
-    - dropPercent - indicate percent of dropout, number between 0 and 1
-    - testInput - set of testing data, used in the test for overfitting
-    - testInput -  set of expeceted ouput for tested data, used in the test for overfitting
-
-File <b>activationFunctions.py</b> contains few most popular activation functions and their derivative
-
-To pass arrays, matrices and list of matrices use <b>np.array</b>
+To pass vectors and matrices use <b>numpy structures</b>
 
 ## Briefly about network
-Network is build of layers, we can distinguish input, hidden and output layer.
-Each layer is build of neurons, which is some kind of atom unit of networks. We need to adjust number of neurons in input layer to input data and similarly number of neurons in output layer is equal to number of expected output. For example in MNIST database we have images of digits 28x28 pixels, so our input is 784 pixels of image, and output is every possible digits 0-9. Structure of network could looks like that [784,hiddenLayer,10] then. Hidden layer is useful for more advanced techniques of deep learning. Without going into details I would say this network use backpropagation, gradient descent, batch mechanism and dropout. When we are preparing our network for training we should take into account
-- learning rate (alpha), which says how fast network will learn
-- iterations indicates how long network will learn
-- leftRange and rightRange says about range of starting weights
-- dropoutPercent is percent of neurons dropout, which helps us to avoid net overfitting
-- activation functions are used to filter outputs of each layers
 
-So us we can see there are few factors of network that should be adjust for our input data. It affects on training time and final accuracy. Sometimes it is really hard task to do. There are many unexplained terms here, so if interested in about details i can recommend <b>Grokking Deep Learning(Andrew W. Trask)</b> book, which is really great first step into neural networks.
+Neural Network consists of layers where we can distinguish three types of layers - <b>input</b>, <b>hidden</b>, <b>output</b>. Obviously there is only one input layer and one output, but we can use as many hidden layers as we want. Every layer contains some number of neurons and activation function (except input layer).
+<br>
 
-## MNIST Test
-Here i want to show some results for MNIST database
-<table style="width:100%">
-  <tr>
-    <th>Structure</th>
-    <th>Amount of training data</th>
-    <th>Amount of testing data</th>
-    <th>Iterations</th>
-    <th>Alpha</th>
-    <th>DropoutPercent</th>
-    <th>Batch size</th>
-    <th>Hidden activaton function</th>
-    <th>Output activaton function</th>
-    <th>Accuracy</th>
-    <th>Training time</th>
-  </tr>
-  <tr>
-    <td>[784,40,10]</td>
-    <td>1000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.0005</td>
-    <td>0.5</td>
-    <td>Full</td>
-    <td>ReLU</td>
-    <td>Empty</td>
-    <td>85%</td>
-    <td>25s</td>
-  </tr>
-  <tr>
-    <td>[784,40,10]</td>
-    <td>10000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.00005</td>
-    <td>0.5</td>
-    <td>Full</td>
-    <td>ReLU</td>
-    <td>Empty</td>
-    <td>89%</td>
-    <td>242s</td>
-  </tr>
-  <tr>
-    <td>[784,40,10]</td>
-    <td>60000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.000005</td>
-    <td>0.5</td>
-    <td>Full</td>
-    <td>ReLU</td>
-    <td>Empty</td>
-    <td>87%</td>
-    <td>1332s</td>
-  </tr>
-  <tr>
-    <td>[784,40,10]</td>
-    <td>1000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.001</td>
-    <td>0.5</td>
-    <td>100</td>
-    <td>ReLU</td>
-    <td>Empty</td>
-    <td>86%</td>
-    <td>24s</td>
-  </tr>
-  <tr>
-    <td>[784,40,10]</td>
-    <td>10000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.001</td>
-    <td>0.5</td>
-    <td>100</td>
-    <td>ReLU</td>
-    <td>Empty</td>
-    <td>91%</td>
-    <td>260s</td>
-  </tr>
-  <tr>
-    <td>[784,40,10]</td>
-    <td>60000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.0001</td>
-    <td>0.5</td>
-    <td>100</td>
-    <td>ReLU</td>
-    <td>Empty</td>
-    <td>92%</td>
-    <td>1693s</td>
-  </tr>
-  <tr>
-    <td>[784,100,10]</td>
-    <td>1000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.2</td>
-    <td>0.5</td>
-    <td>100</td>
-    <td>Tanh</td>
-    <td>softmax</td>
-    <td>86%</td>
-    <td>24s</td>
-  </tr>
-  <tr>
-    <td>[784,100,10]</td>
-    <td>10000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.05</td>
-    <td>0.5</td>
-    <td>100</td>
-    <td>Tanh</td>
-    <td>softmax</td>
-    <td>92%</td>
-    <td>384s</td>
-  </tr>
-  <tr>
-    <td>[784,100,10]</td>
-    <td>60000</td>
-    <td>10000</td>
-    <td>350</td>
-    <td>0.01</td>
-    <td>0.5</td>
-    <td>100</td>
-    <td>Tanh</td>
-    <td>softmax</td>
-    <td>92%</td>
-    <td>2239s</td>
-  </tr>
-</table>
+Input layer indicates how input data looks like. So if we have image of digit 28x28px, then we will transform it into vector with 784 elements and this number is a number of "neurons" in input layer.
+<br>
+
+As it was said before, we can use any number of hidden layers, and we put them between input and output layer. It is your job to figure out how many hidden layers and number of neurons use. There is additional thing to use - <b>activation</b> function, which says how data are manipulated. Few of them are ready to use in this implementation:
+  - linear
+  - relu
+  - tanh
+  - softmax (only for output)
+
+The last one is output layer, which is similar to hidden. Number of neurons here is number of possible answers for our input. In case of digits we want to guess 0-9 digits, then our output will consists of 10 neurons, each corresponding to one digit. It is recommended to use linear or softmax function here.
+
+![Build structure code](codess.png)
+
+Here we have built structure of network with where we use 2 hidden layers with relu functions and 16/32 neurons in
+hidden layers. So now we can start training and fit function is in charge of it where we are passing parameters as learning rate, drop percent or iterations, which helps us control training flow. But main issue here is passing input training data and expected data. After training, we can use our network to recognize digits from image.
